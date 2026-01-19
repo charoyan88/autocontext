@@ -49,6 +49,8 @@ class ProcessLogBatchJob implements ShouldQueue
         ]);
 
 
+        $enrichedEvents = [];
+
         foreach ($this->events as $event) {
             try {
                 // Step 1: Record incoming stat
@@ -58,7 +60,8 @@ class ProcessLogBatchJob implements ShouldQueue
                 $enrichedEvent = $enricher->enrich($project, $event);
 
                 // Step 3: Aggregate errors FIRST (before any filtering)
-                $isError = in_array(strtoupper($enrichedEvent['level'] ?? ''), ['ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY']);
+                $level = strtoupper($enrichedEvent['level'] ?? '');
+                $isError = in_array($level, ['ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY']);
                 if ($isError) {
                     $errorAggregator->record(
                         $project->id,
@@ -67,60 +70,60 @@ class ProcessLogBatchJob implements ShouldQueue
                     );
                 }
 
-                // Step 4: Check for duplicate errors (if ERROR level)
+                // Step 4: Check for duplicate errors
                 if ($filter->shouldDropDuplicate($project->id, $enrichedEvent, $errorAggregator)) {
-                    Log::debug("Duplicate error filtered", [
-                        'project_id' => $this->projectId,
-                        'message' => substr($enrichedEvent['message'] ?? '', 0, 100)
-                    ]);
                     $statsRecorder->recordFiltered($project->id);
                     continue;
                 }
 
                 // Step 5: Check if event should be filtered (noise)
                 if ($filter->shouldDrop($enrichedEvent)) {
-                    Log::debug("Event filtered", [
-                        'project_id' => $this->projectId,
-                        'level' => $enrichedEvent['level'] ?? 'unknown',
-                        'message' => substr($enrichedEvent['message'] ?? '', 0, 100)
-                    ]);
                     $statsRecorder->recordFiltered($project->id);
                     continue;
                 }
 
-                // Step 6: Forward event to downstream
-                $forwarded = false;
-                $hasActiveDownstream = $project->downstreamEndpoints()
-                    ->where('is_active', true)
-                    ->exists();
+                // Collect for batch forwarding
+                $enrichedEvents[] = $enrichedEvent;
 
-                if ($hasActiveDownstream) {
-                    $forwarded = $forwarder->forward($enrichedEvent, $project);
-                }
-
-                if ($forwarded) {
-                    $statsRecorder->recordOutgoing($project->id);
-                } elseif ($hasActiveDownstream) {
-                    $statsRecorder->recordForwardFailed($project->id);
-                }
-
-                // Step 7: Record deployment errors
+                // Record deployment errors for stats
                 if ($isError && ($enrichedEvent['deployment_related'] ?? false)) {
                     $statsRecorder->recordDeploymentError($project->id);
                 }
 
-                Log::info("Event processed successfully", [
+            } catch (\Exception $e) {
+                Log::error("Failed to process event in batch", [
                     'project_id' => $this->projectId,
-                    'level' => $enrichedEvent['level'] ?? 'unknown',
-                    'deployment_id' => $enrichedEvent['deployment_id'] ?? null,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        // Step 6: Forward enriched events batch to downstream
+        if (!empty($enrichedEvents)) {
+            $hasActiveEndpoints = $project->downstreamEndpoints()->where('is_active', true)->exists();
+
+            if ($hasActiveEndpoints) {
+                $forwarded = $forwarder->forwardBatch($enrichedEvents, $project);
+
+                if ($forwarded) {
+                    for ($i = 0; $i < count($enrichedEvents); $i++) {
+                        $statsRecorder->recordOutgoing($project->id);
+                    }
+                } else {
+                    for ($i = 0; $i < count($enrichedEvents); $i++) {
+                        $statsRecorder->recordForwardFailed($project->id);
+                    }
+                }
+
+                Log::info("Batch processed and forwarded", [
+                    'project_id' => $this->projectId,
+                    'accepted_count' => count($enrichedEvents),
                     'forwarded' => $forwarded
                 ]);
-
-            } catch (\Exception $e) {
-                Log::error("Failed to process event", [
+            } else {
+                Log::info("Batch processed but no active downstream endpoints. Events dropped.", [
                     'project_id' => $this->projectId,
-                    'error' => $e->getMessage(),
-                    'event' => $event
+                    'accepted_count' => count($enrichedEvents)
                 ]);
             }
         }

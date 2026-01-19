@@ -19,7 +19,7 @@ class DownstreamEndpointController extends Controller
         }
 
         $validated = $request->validate([
-            'type' => 'required|in:http,file',
+            'type' => 'required|in:http,file,sentry',
             'endpoint_url' => 'nullable|url|required_if:type,http',
             'config_json' => 'nullable|json',
             'is_active' => 'boolean',

@@ -40,23 +40,17 @@ git clone https://github.com/charoyan88/autocontext.git
 cd autocontext
 ```
 
-2. **Start Docker containers**
+2. **One-command startup (recommended)**
+```bash
+chmod +x scripts/start_mvp.sh
+./scripts/start_mvp.sh
+```
+
+3. **Manual steps (alternative)**
 ```bash
 docker compose up -d
-```
-
-3. **Install dependencies**
-```bash
 docker compose exec app composer install
-```
-
-4. **Generate application key**
-```bash
 docker compose exec app php artisan key:generate
-```
-
-5. **Run migrations and seed demo data**
-```bash
 docker compose exec app php artisan demo:seed
 ```
 
@@ -176,16 +170,7 @@ docker compose exec app php artisan test --testsuite=Feature
 
 ## 📈 Scheduler
 
-The hourly stats flush job runs automatically. To start the scheduler:
-
-```bash
-docker compose exec app php artisan schedule:work
-```
-
-Or configure a cron job:
-```cron
-* * * * * cd /path/to/autocontext && docker compose exec -T app php artisan schedule:run >> /dev/null 2>&1
-```
+The hourly stats flush job runs automatically via the `scheduler` container.
 
 ## 🐛 Troubleshooting
 

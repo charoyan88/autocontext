@@ -1,0 +1,31 @@
+{
+    "events": [
+        {
+            "timestamp": "2026-01-17T12:00:00+00:00",
+            "level": "DEBUG",
+            "message": "This should be filtered (DEBUG level)"
+        },
+        {
+            "timestamp": "2026-01-17T12:00:01+00:00",
+            "level": "INFO",
+            "message": "This should be filtered (Health check path)",
+            "path": "/health"
+        },
+        {
+            "timestamp": "2025-12-10T14:40:00+00:00",
+            "level": "ERROR",
+            "message": "This should be enriched (Related to v2.0.0)",
+            "context": {
+                "source": "test-enrichment"
+            }
+        },
+        {
+            "timestamp": "2026-01-17T12:00:02+00:00",
+            "level": "INFO",
+            "message": "This should be enriched (Not related to any recent deployment)",
+            "context": {
+                "source": "test-enrichment-non-related"
+            }
+        }
+    ]
+}

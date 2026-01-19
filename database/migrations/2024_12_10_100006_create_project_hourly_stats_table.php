@@ -18,10 +18,12 @@ return new class extends Migration {
             $table->bigInteger('outgoing_count')->default(0);
             $table->bigInteger('filtered_count')->default(0);
             $table->bigInteger('deployment_error_count')->default(0);
+            $table->bigInteger('forward_failed_count')->default(0);
             $table->timestamps();
 
             $table->unique(['project_id', 'hour_ts']);
             $table->index('hour_ts');
+            $table->index('forward_failed_count');
         });
     }
 
