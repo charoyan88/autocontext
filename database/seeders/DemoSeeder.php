@@ -19,19 +19,20 @@ class DemoSeeder extends Seeder
      */
     public function run(): void
     {
+        // 1. Create Admin User
         $user = User::firstOrCreate(
-            ['email' => 'demo@example.com'],
+            ['email' => 'admin@example.com'],
             [
-                'name' => 'Demo User',
+                'name' => 'Demo Admin',
                 'password' => Hash::make('password'),
             ]
         );
 
-        // Create a demo project
+        // 2. Create Demo Project
         $project = Project::firstOrCreate(
-            ['slug' => 'demo-app'],
+            ['slug' => 'demo-project'],
             [
-                'name' => 'Demo Application',
+                'name' => 'Demo E-Commerce App',
                 'status' => 'active',
                 'default_region' => 'us-east-1',
                 'user_id' => $user->id,
@@ -42,65 +43,56 @@ class DemoSeeder extends Seeder
             $project->save();
         }
 
-        // Create an API key for the project
+        // 3. Create API Key
         $apiKey = ApiKey::firstOrCreate(
             ['project_id' => $project->id],
             [
                 'key' => ApiKey::generateKey(),
                 'is_active' => true,
-                'description' => 'Demo API Key for testing',
+                'description' => 'Demo Key',
+                'last_used_at' => now()->subMinutes(5),
             ]
         );
 
-        // Create some sample deployments
-        Deployment::firstOrCreate(
-            ['project_id' => $project->id, 'version' => 'v1.0.0'],
+        // 4. Create Downstream Endpoint
+        DownstreamEndpoint::updateOrCreate(
+            ['project_id' => $project->id],
+            [
+                'type' => 'file',
+                'config' => ['path' => 'demo.log'],
+                'is_active' => true,
+                'endpoint_url' => null,
+            ]
+        );
+
+        // 5. Create Deployments
+        $deploy1 = Deployment::firstOrCreate(
+            ['version' => 'v1.0.0', 'project_id' => $project->id],
+            [
+                'environment' => 'production',
+                'region' => 'us-east-1',
+                'started_at' => now()->subDays(2),
+                'finished_at' => now()->subDays(2)->addMinutes(5),
+            ]
+        );
+
+        $deploy2 = Deployment::firstOrCreate(
+            ['version' => 'v1.1.0-hotfix', 'project_id' => $project->id],
             [
                 'environment' => 'production',
                 'region' => 'us-east-1',
                 'started_at' => now()->subHours(2),
-                'finished_at' => now()->subHours(2)->addMinutes(5),
-                'metadata' => [
-                    'commit' => 'abc123',
-                    'deployer' => 'CI/CD Pipeline',
-                ],
+                'finished_at' => now()->subHours(2)->addMinutes(3),
             ]
         );
 
-        $latestDeployment = Deployment::firstOrCreate(
-            ['project_id' => $project->id, 'version' => 'v1.1.0'],
-            [
-                'environment' => 'production',
-                'region' => 'us-east-1',
-                'started_at' => now()->subMinutes(30),
-                'finished_at' => null, // Still in progress
-                'metadata' => [
-                    'commit' => 'def456',
-                    'deployer' => 'CI/CD Pipeline',
-                ],
-            ]
-        );
-
-        // Create downstream endpoints
-        DownstreamEndpoint::updateOrCreate(
-            ['project_id' => $project->id, 'type' => 'file'],
-            [
-                'endpoint_url' => null,
-                'config' => [
-                    'filename' => 'demo-app.log',
-                ],
-                'is_active' => true,
-            ]
-        );
-
-        // Generate hourly stats for the last 24 hours
+        // 6. Generate Hourly Stats
         for ($i = 23; $i >= 0; $i--) {
             $hour = now()->subHours($i)->startOfHour();
-
-            $incoming = rand(1000, 4000);
-            $filtered = (int) ($incoming * rand(25, 45) / 100);
+            $incoming = rand(1000, 5000);
+            $filtered = (int) ($incoming * rand(30, 40) / 100);
             $outgoing = $incoming - $filtered;
-            $errors = ($i <= 2 && $i >= 1) ? rand(30, 150) : rand(0, 10);
+            $errors = ($i <= 2 && $i >= 1) ? rand(50, 200) : rand(0, 10);
 
             ProjectHourlyStat::updateOrCreate(
                 ['project_id' => $project->id, 'hour_ts' => $hour],
@@ -109,11 +101,11 @@ class DemoSeeder extends Seeder
                     'outgoing_count' => $outgoing,
                     'filtered_count' => $filtered,
                     'deployment_error_count' => $errors,
-                    'forward_failed_count' => rand(0, 3),
                 ]
             );
         }
 
+        // 7. Create Aggregated Errors
         AggregatedError::updateOrCreate(
             [
                 'project_id' => $project->id,
@@ -125,7 +117,7 @@ class DemoSeeder extends Seeder
                 'last_seen_at' => now()->subMinutes(10),
                 'count_total' => 150,
                 'count_since_last_deploy' => 150,
-                'last_deployment_id' => $latestDeployment->id,
+                'last_deployment_id' => $deploy2->id,
             ]
         );
 
@@ -140,20 +132,14 @@ class DemoSeeder extends Seeder
                 'last_seen_at' => now()->subHours(1),
                 'count_total' => 5,
                 'count_since_last_deploy' => 5,
-                'last_deployment_id' => $latestDeployment->id,
+                'last_deployment_id' => $deploy2->id,
             ]
         );
 
-        $this->command->info('Demo project created successfully!');
-        $this->command->info('Project: ' . $project->name);
-        $this->command->info('Login: demo@example.com / password');
-        $this->command->info('API Key: ' . $apiKey->key);
-        $this->command->info('Downstream endpoint: file (active)');
-        $this->command->info('');
-        $this->command->info('You can now test the API with:');
-        $this->command->info('curl -X POST http://localhost:8080/api/logs \\');
-        $this->command->info('  -H "X-Api-Key: ' . $apiKey->key . '" \\');
-        $this->command->info('  -H "Content-Type: application/json" \\');
-        $this->command->info('  -d \'{"timestamp":"' . now()->toIso8601String() . '","level":"INFO","message":"Test log message"}\'');
+        if ($this->command) {
+            $this->command->info('Demo data seeded successfully!');
+            $this->command->info('Login with: admin@example.com / password');
+            $this->command->info('API Key: ' . $apiKey->key);
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\LogEventData;
 use App\Services\ErrorAggregator;
 
 class LogFilter
@@ -9,7 +10,7 @@ class LogFilter
     /**
      * Determine if a log event should be dropped/filtered.
      */
-    public function shouldDrop(array $event): bool
+    public function shouldDrop(LogEventData $event): bool
     {
         // Filter 1: Drop DEBUG and TRACE levels
         if ($this->isNoiseLevel($event)) {
@@ -32,9 +33,9 @@ class LogFilter
     /**
      * Check if the event should be dropped as a duplicate error.
      */
-    public function shouldDropDuplicate(int $projectId, array $event, ErrorAggregator $errorAggregator): bool
+    public function shouldDropDuplicate(int $projectId, LogEventData $event, ErrorAggregator $errorAggregator): bool
     {
-        $level = strtoupper($event['level'] ?? '');
+        $level = strtoupper($event->level ?? '');
         $isError = in_array($level, ['ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY']);
 
         if (!$isError) {
@@ -47,9 +48,9 @@ class LogFilter
     /**
      * Check if the event level is considered noise.
      */
-    private function isNoiseLevel(array $event): bool
+    private function isNoiseLevel(LogEventData $event): bool
     {
-        $level = strtoupper($event['level'] ?? '');
+        $level = strtoupper($event->level ?? '');
         $noiseLevels = config('log_filter.noise_levels', ['DEBUG', 'TRACE']);
 
         return in_array($level, $noiseLevels);
@@ -58,9 +59,9 @@ class LogFilter
     /**
      * Check if the event is from a health-check or monitoring endpoint.
      */
-    private function isHealthCheckPath(array $event): bool
+    private function isHealthCheckPath(LogEventData $event): bool
     {
-        $path = $event['path'] ?? '';
+        $path = $event->path ?? '';
 
         if (empty($path)) {
             return false;

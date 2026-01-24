@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessLogBatchJob;
 use App\Models\Project;
+use App\DTO\LogEventData;
 use App\Services\LogNormalizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -44,7 +45,10 @@ class LogIngestController extends Controller
             ], 422);
         }
 
-        $validEvents = $validator->validated()['events'];
+        $validEvents = array_map(
+            static fn(array $event) => LogEventData::fromArray($event),
+            $validator->validated()['events']
+        );
         $acceptedCount = count($validEvents);
 
         // Dispatch job to process logs asynchronously

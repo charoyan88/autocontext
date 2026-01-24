@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\DTO\LogEventData;
 use App\Models\Project;
 use App\Services\LogContextEnricher;
 use App\Services\LogFilter;
@@ -52,6 +53,17 @@ class ProcessLogBatchJob implements ShouldQueue
         $enrichedEvents = [];
 
         foreach ($this->events as $event) {
+            if (is_array($event)) {
+                $event = LogEventData::fromArray($event);
+            }
+
+            if (!$event instanceof LogEventData) {
+                Log::warning('Skipping invalid log event payload', [
+                    'project_id' => $this->projectId,
+                ]);
+                continue;
+            }
+
             try {
                 // Step 1: Record incoming stat
                 $statsRecorder->recordIncoming($project->id);
@@ -60,13 +72,13 @@ class ProcessLogBatchJob implements ShouldQueue
                 $enrichedEvent = $enricher->enrich($project, $event);
 
                 // Step 3: Aggregate errors FIRST (before any filtering)
-                $level = strtoupper($enrichedEvent['level'] ?? '');
+                $level = strtoupper($enrichedEvent->level ?? '');
                 $isError = in_array($level, ['ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY']);
                 if ($isError) {
                     $errorAggregator->record(
                         $project->id,
                         $enrichedEvent,
-                        $enrichedEvent['deployment_id'] ?? null
+                        $enrichedEvent->deploymentId
                     );
                 }
 
@@ -86,7 +98,7 @@ class ProcessLogBatchJob implements ShouldQueue
                 $enrichedEvents[] = $enrichedEvent;
 
                 // Record deployment errors for stats
-                if ($isError && ($enrichedEvent['deployment_related'] ?? false)) {
+                if ($isError && $enrichedEvent->deploymentRelated) {
                     $statsRecorder->recordDeploymentError($project->id);
                 }
 
@@ -103,22 +115,12 @@ class ProcessLogBatchJob implements ShouldQueue
             $hasActiveEndpoints = $project->downstreamEndpoints()->where('is_active', true)->exists();
 
             if ($hasActiveEndpoints) {
-                $forwarded = $forwarder->forwardBatch($enrichedEvents, $project);
+                $queued = $forwarder->forwardBatch($enrichedEvents, $project);
 
-                if ($forwarded) {
-                    for ($i = 0; $i < count($enrichedEvents); $i++) {
-                        $statsRecorder->recordOutgoing($project->id);
-                    }
-                } else {
-                    for ($i = 0; $i < count($enrichedEvents); $i++) {
-                        $statsRecorder->recordForwardFailed($project->id);
-                    }
-                }
-
-                Log::info("Batch processed and forwarded", [
+                Log::info("Batch processed and queued for forwarding", [
                     'project_id' => $this->projectId,
                     'accepted_count' => count($enrichedEvents),
-                    'forwarded' => $forwarded
+                    'queued' => $queued
                 ]);
             } else {
                 Log::info("Batch processed but no active downstream endpoints. Events dropped.", [

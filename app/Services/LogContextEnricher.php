@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\LogEventData;
 use App\Models\Deployment;
 use App\Models\Project;
 use Carbon\Carbon;
@@ -16,38 +17,36 @@ class LogContextEnricher
     /**
      * Enrich a log event with deployment context and metadata.
      */
-    public function enrich(Project $project, array $event): array
+    public function enrich(Project $project, LogEventData $event): LogEventData
     {
-        $enrichedEvent = $event;
-
         // Parse event timestamp
-        $eventTimestamp = Carbon::parse($event['timestamp']);
+        $eventTimestamp = Carbon::parse($event->timestamp);
 
         // Find relevant deployment
         $deployment = $this->findRelevantDeployment($project, $eventTimestamp);
 
         if ($deployment) {
-            $enrichedEvent['deployment_id'] = $deployment->id;
-            $enrichedEvent['deployment_version'] = $deployment->version;
-            $enrichedEvent['deployment_environment'] = $deployment->environment;
+            $event->deploymentId = $deployment->id;
+            $event->deploymentVersion = $deployment->version;
+            $event->deploymentEnvironment = $deployment->environment;
 
             // Check if event is deployment-related (within time window)
-            $enrichedEvent['deployment_related'] = $this->isDeploymentRelated(
+            $event->deploymentRelated = $this->isDeploymentRelated(
                 $deployment,
                 $eventTimestamp
             );
         } else {
-            $enrichedEvent['deployment_id'] = null;
-            $enrichedEvent['deployment_version'] = null;
-            $enrichedEvent['deployment_environment'] = null;
-            $enrichedEvent['deployment_related'] = false;
+            $event->deploymentId = null;
+            $event->deploymentVersion = null;
+            $event->deploymentEnvironment = null;
+            $event->deploymentRelated = false;
         }
 
         // Add service and region if not present
-        $enrichedEvent['service'] = $event['service'] ?? $project->name;
-        $enrichedEvent['region'] = $event['region'] ?? $deployment?->region ?? $project->default_region;
+        $event->service = $event->service ?? $project->name;
+        $event->region = $event->region ?? $deployment?->region ?? $project->default_region;
 
-        return $enrichedEvent;
+        return $event;
     }
 
     /**

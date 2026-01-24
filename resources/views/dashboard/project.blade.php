@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-800 dark:text-slate-100 leading-tight">
             {{ $project->name }} - Dashboard
         </h2>
     </x-slot>
@@ -9,55 +9,55 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Incoming</div>
-                    <div class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm text-slate-500 dark:text-slate-400">Incoming</div>
+                    <div class="text-3xl font-bold text-slate-900 dark:text-slate-100">
                         {{ number_format($stats['total_incoming']) }}</div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Outgoing</div>
-                    <div class="text-3xl font-bold text-green-600">{{ number_format($stats['total_outgoing']) }}</div>
+                <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm text-slate-500 dark:text-slate-400">Outgoing</div>
+                    <div class="text-3xl font-bold text-emerald-600">{{ number_format($stats['total_outgoing']) }}</div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Filtered</div>
-                    <div class="text-3xl font-bold text-orange-600">{{ number_format($stats['total_filtered']) }}</div>
+                <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm text-slate-500 dark:text-slate-400">Filtered</div>
+                    <div class="text-3xl font-bold text-amber-500">{{ number_format($stats['total_filtered']) }}</div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Savings</div>
-                    <div class="text-3xl font-bold text-blue-600">{{ $stats['savings_percentage'] }}%</div>
+                <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm text-slate-500 dark:text-slate-400">Savings</div>
+                    <div class="text-3xl font-bold text-sky-600">{{ $stats['savings_percentage'] }}%</div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Deploy Errors</div>
-                    <div class="text-3xl font-bold text-red-600">
+                <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm text-slate-500 dark:text-slate-400">Deploy Errors</div>
+                    <div class="text-3xl font-bold text-rose-500">
                         {{ number_format($stats['total_deployment_errors']) }}</div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Forward Failed</div>
-                    <div class="text-3xl font-bold text-red-600">
+                <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="text-sm text-slate-500 dark:text-slate-400">Forward Failed</div>
+                    <div class="text-3xl font-bold text-rose-500">
                         {{ number_format($stats['total_forward_failed']) }}</div>
                 </div>
             </div>
 
             <!-- Chart -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Last 24 Hours</h3>
+            <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4 text-slate-900 dark:text-slate-100">Last 24 Hours</h3>
                 <canvas id="statsChart" width="400" height="100"></canvas>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Recent Deployments -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Recent Deployments</h3>
+                <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-slate-900 dark:text-slate-100">Recent Deployments</h3>
                     @if($recentDeployments->isEmpty())
-                        <p class="text-gray-500">No deployments yet</p>
+                        <p class="text-slate-500">No deployments yet</p>
                     @else
                         <div class="space-y-2">
                             @foreach($recentDeployments as $deployment)
-                                <div class="border-l-4 border-blue-500 pl-3 py-2">
+                                <div class="border-l-4 border-sky-500 pl-3 py-2">
                                     <div class="font-semibold">{{ $deployment->version }}</div>
-                                    <div class="text-sm text-gray-500">{{ $deployment->environment }} -
+                                    <div class="text-sm text-slate-500">{{ $deployment->environment }} -
                                         {{ $deployment->started_at->diffForHumans() }}</div>
-                                    <div class="text-sm text-gray-500">
+                                    <div class="text-sm text-slate-500">
                                         Errors in window: {{ $deploymentErrorCounts[$deployment->id] ?? 0 }}
                                     </div>
                                 </div>
@@ -67,16 +67,16 @@
                 </div>
 
                 <!-- Top Errors -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Top Errors</h3>
+                <div class="bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-slate-900 dark:text-slate-100">Top Errors</h3>
                     @if($topErrors->isEmpty())
-                        <p class="text-gray-500">No errors recorded</p>
+                        <p class="text-slate-500">No errors recorded</p>
                     @else
                         <div class="space-y-2">
                             @foreach($topErrors as $error)
-                                <div class="border-l-4 border-red-500 pl-3 py-2">
+                                <div class="border-l-4 border-rose-500 pl-3 py-2">
                                     <div class="font-semibold text-sm">{{ Str::limit($error->last_message, 50) }}</div>
-                                    <div class="text-sm text-gray-500">Count: {{ $error->count_total }}</div>
+                                    <div class="text-sm text-slate-500">Count: {{ $error->count_total }}</div>
                                 </div>
                             @endforeach
                         </div>

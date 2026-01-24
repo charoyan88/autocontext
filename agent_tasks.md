@@ -29,6 +29,15 @@
 - Deployment insights: show recent deployments with related error counts, highlight deployment-related errors metric.
 - Demo tooling: artisan `demo:seed` command to create sample project, API key, downstream config, sample deployments/logs; README instructions for running via Docker and demonstrating API usage.
 
+## Session 17-01-2026 – Scalability & Sentry Native (Completed)
+- **Universal Batching**: Refactored `LogForwarder` to support `forwardBatch()`. Processed logs are now collected and sent in a single batch per job, significantly boosting performance.
+- **Sentry-Native Support**: Added `sentry` type to `downstream_endpoints`. Implemented automatic formatting of enriched logs into Sentry's Store API format (including Release, Tags, and Extra context).
+- **UI Updates**: Updated Project Management view to allow selecting Sentry and configuring DSN/Endpoints.
+- **Verification**: Overhauled `Tests\Feature\LogBatchProcessingTest.php` with 4 test cases covering dispatching, batching, Sentry formatting, and "no active endpoints" scenarios.
+- **Refinement**: Fixed controller validation, improved Sentry error tracking, handled missing endpoints in the job, and **resolved Vite HMR host issues** for correct UI rendering in Docker.
+- **Detailed Walkthrough**: See `docs/walkthrough_2026_01_17.md` for full details and test results.
+
+---
 ## Cross-cutting
 - Redis + PostgreSQL config shared across services/jobs.
 - Error handling/logging conventions (e.g., mark forward_failed, stats increments).

@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Deployment;
 use App\Models\Project;
 use App\Models\User;
+use App\DTO\LogEventData;
 use App\Services\LogContextEnricher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -34,17 +35,17 @@ class LogContextEnricherTest extends TestCase
             'started_at' => now()->subMinutes(10),
         ]);
 
-        $event = [
+        $event = LogEventData::fromArray([
             'timestamp' => now()->toIso8601String(),
             'level' => 'ERROR',
             'message' => 'Test error',
-        ];
+        ]);
 
         $enricher = new LogContextEnricher();
         $enriched = $enricher->enrich($project, $event);
 
-        $this->assertSame($deployment->id, $enriched['deployment_id']);
-        $this->assertTrue($enriched['deployment_related']);
+        $this->assertSame($deployment->id, $enriched->deploymentId);
+        $this->assertTrue($enriched->deploymentRelated);
     }
 
     public function test_it_marks_events_outside_deploy_window(): void
@@ -68,15 +69,15 @@ class LogContextEnricherTest extends TestCase
             'started_at' => now()->subHours(2),
         ]);
 
-        $event = [
+        $event = LogEventData::fromArray([
             'timestamp' => now()->toIso8601String(),
             'level' => 'ERROR',
             'message' => 'Late error',
-        ];
+        ]);
 
         $enricher = new LogContextEnricher();
         $enriched = $enricher->enrich($project, $event);
 
-        $this->assertFalse($enriched['deployment_related']);
+        $this->assertFalse($enriched->deploymentRelated);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\LogEventData;
 use App\Models\AggregatedError;
 use Illuminate\Support\Facades\Redis;
 
@@ -10,13 +11,13 @@ class ErrorAggregator
     /**
      * Record an error event and check if it should be filtered.
      */
-    public function shouldFilter(int $projectId, array $event): bool
+    public function shouldFilter(int $projectId, LogEventData $event): bool
     {
         $errorHash = $this->calculateErrorHash($event);
 
         // Use event timestamp, not worker time
-        $eventTime = isset($event['timestamp'])
-            ? \Carbon\Carbon::parse($event['timestamp'])
+        $eventTime = isset($event->timestamp)
+            ? \Carbon\Carbon::parse($event->timestamp)
             : now();
         $minute = $eventTime->format('YmdHi');
 
@@ -33,7 +34,7 @@ class ErrorAggregator
     /**
      * Record error in database for aggregation.
      */
-    public function record(int $projectId, array $event, ?int $deploymentId = null): void
+    public function record(int $projectId, LogEventData $event, ?int $deploymentId = null): void
     {
         $errorHash = $this->calculateErrorHash($event);
 
@@ -43,11 +44,11 @@ class ErrorAggregator
                 'error_hash' => $errorHash,
             ],
             [
-                'last_message' => $event['message'] ?? '',
-                'level' => $event['level'] ?? 'ERROR',
+                'last_message' => $event->message ?? '',
+                'level' => $event->level ?? 'ERROR',
                 'last_seen_at' => now(),
                 'last_deployment_id' => $deploymentId,
-                'sample_event' => $event,
+                'sample_event' => $event->toArray(),
             ]
         )->increment('count_total');
 
@@ -62,14 +63,14 @@ class ErrorAggregator
     /**
      * Calculate error hash from event.
      */
-    private function calculateErrorHash(array $event): string
+    private function calculateErrorHash(LogEventData $event): string
     {
         $components = [
-            $event['level'] ?? '',
-            $event['message'] ?? '',
-            $event['context']['exception'] ?? '',
-            $event['context']['file'] ?? '',
-            $event['context']['line'] ?? '',
+            $event->level ?? '',
+            $event->message ?? '',
+            $event->context['exception'] ?? '',
+            $event->context['file'] ?? '',
+            $event->context['line'] ?? '',
         ];
 
         return md5(implode('|', $components));

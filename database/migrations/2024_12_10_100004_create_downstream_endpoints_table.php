@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('downstream_endpoints', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
-            $table->enum('type', ['http', 'file', 's3', 'sentry'])->default('http');
+            $table->string('type')->default('http');
             $table->string('endpoint_url')->nullable();
             $table->jsonb('config')->nullable();
             $table->boolean('is_active')->default(true);

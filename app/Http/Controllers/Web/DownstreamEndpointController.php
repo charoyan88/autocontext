@@ -18,8 +18,10 @@ class DownstreamEndpointController extends Controller
             abort(404);
         }
 
+        $allowedTypes = array_keys(config('downstream.adapters', []));
+
         $validated = $request->validate([
-            'type' => 'required|in:http,file,sentry',
+            'type' => 'required|in:' . implode(',', $allowedTypes),
             'endpoint_url' => 'nullable|url|required_if:type,http',
             'config_json' => 'nullable|json',
             'is_active' => 'boolean',

@@ -110,7 +110,7 @@ class LogBatchProcessingTest extends TestCase
             'default_region' => 'us-east-1',
         ]);
 
-        $endpoint = DownstreamEndpoint::create([
+        DownstreamEndpoint::create([
             'project_id' => $project->id,
             'type' => 'sentry',
             'endpoint_url' => 'https://sentry.io/api/123/store/',
