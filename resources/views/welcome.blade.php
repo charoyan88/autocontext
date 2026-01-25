@@ -5,6 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Auto-Context | Smart Log Observability</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -22,15 +24,19 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        <span class="font-bold text-xl tracking-tight text-gray-900">Auto-Context</span>
+                        <span class="whitespace-nowrap font-bold text-xl tracking-tight text-gray-900">Auto-Context</span>
                     </a>
                 </div>
                 <div class="flex flex-1 justify-end gap-x-6">
                     @auth
+                        <a href="{{ route('docs') }}"
+                            class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">Docs</a>
                         <a href="{{ url('/dashboard') }}"
                             class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">Go to
                             Dashboard <span aria-hidden="true">&rarr;</span></a>
                     @else
+                        <a href="{{ route('docs') }}"
+                            class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">Docs</a>
                         <a href="{{ route('login') }}"
                             class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">Log
                             in</a>
@@ -58,9 +64,9 @@
                             Context-Aware Observability for Modern Deployments
                         </h1>
                         <p class="mt-6 text-lg leading-8 text-gray-600">
-                            Stop guessing which deployment caused that error. Auto-Context automatically enriches your
-                            logs with deployment metadata, filters out noise, and aggregates errors to save you time and
-                            money.
+                            Stop guessing which deployment caused that error. Auto-Context enriches logs with deploy
+                            metadata, filters noise, and aggregates errors so SREs, DevOps, and backend teams can ship
+                            faster with confidence.
                         </p>
                         <div class="mt-10 flex items-center justify-center gap-x-6">
                             @auth
@@ -75,6 +81,16 @@
                                         aria-hidden="true">→</span></a>
                             @endauth
                         </div>
+                        <div class="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-gray-600">
+                            <span class="rounded-full bg-gray-100 px-3 py-1">SRE</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">DevOps</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">Backend</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">Eng Managers</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">Enrich</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">Filter</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">Aggregate</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">Forward</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -86,6 +102,89 @@
                 </div>
             </div>
         </div>
+
+        <!-- How It Works -->
+        <section class="bg-gray-50 py-20 sm:py-24">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <h2 class="text-base font-semibold leading-7 text-indigo-600">How it works</h2>
+                        <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                            From raw logs to deploy-level clarity
+                        </p>
+                </div>
+                <div class="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
+                    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                        <p class="text-sm font-semibold text-indigo-600">01</p>
+                        <h3 class="mt-2 text-lg font-semibold text-gray-900">Ingest + enrich</h3>
+                        <p class="mt-2 text-sm text-gray-600">Attach commit SHA, deployment ID, region, and service metadata automatically.</p>
+                    </div>
+                    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                        <p class="text-sm font-semibold text-indigo-600">02</p>
+                        <h3 class="mt-2 text-lg font-semibold text-gray-900">Filter + dedupe</h3>
+                        <p class="mt-2 text-sm text-gray-600">Remove health checks and repeated errors so real incidents stand out.</p>
+                    </div>
+                    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                        <p class="text-sm font-semibold text-indigo-600">03</p>
+                        <h3 class="mt-2 text-lg font-semibold text-gray-900">Forward downstream</h3>
+                        <p class="mt-2 text-sm text-gray-600">Send only high-signal events to Sentry, Datadog, S3, or your HTTP endpoint.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Proof Points -->
+        <section class="bg-white py-20 sm:py-24">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                    <div class="rounded-2xl border border-gray-200 p-6">
+                        <p class="text-3xl font-bold text-gray-900">Up to 50%</p>
+                        <p class="mt-2 text-sm text-gray-600">less log noise after smart filtering</p>
+                    </div>
+                    <div class="rounded-2xl border border-gray-200 p-6">
+                        <p class="text-3xl font-bold text-gray-900">2x</p>
+                        <p class="mt-2 text-sm text-gray-600">faster incident triage with deploy context</p>
+                    </div>
+                    <div class="rounded-2xl border border-gray-200 p-6">
+                        <p class="text-3xl font-bold text-gray-900">&lt;1 min</p>
+                        <p class="mt-2 text-sm text-gray-600">to spot regressions after deploys</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mini Demo -->
+        <section class="bg-gray-50 py-20 sm:py-24">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <h2 class="text-base font-semibold leading-7 text-indigo-600">Mini demo</h2>
+                    <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Before vs after</p>
+                </div>
+                <div class="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Before</h3>
+                        <p class="mt-2 text-sm text-gray-600">Noisy logs and alerts with no deploy context.</p>
+                        <div class="mt-4 space-y-2 text-sm">
+                            <div class="rounded-lg bg-gray-100 px-3 py-2">ERROR: timeout in /api/orders</div>
+                            <div class="rounded-lg bg-gray-100 px-3 py-2">ERROR: timeout in /api/orders</div>
+                            <div class="rounded-lg bg-gray-100 px-3 py-2">WARN: /healthcheck 503</div>
+                            <div class="rounded-lg bg-gray-100 px-3 py-2">ERROR: timeout in /api/orders</div>
+                        </div>
+                    </div>
+                    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">After</h3>
+                        <p class="mt-2 text-sm text-gray-600">Grouped errors tied to a specific deployment.</p>
+                        <div class="mt-4 space-y-2 text-sm">
+                            <div class="rounded-lg bg-indigo-50 px-3 py-2 text-indigo-900">
+                                ERROR: timeout in /api/orders
+                                <span class="block text-xs text-indigo-700">Deploy v1.14.2 · commit 9f2c1</span>
+                            </div>
+                            <div class="rounded-lg bg-gray-100 px-3 py-2">Noise filtered: health checks (128)</div>
+                            <div class="rounded-lg bg-gray-100 px-3 py-2">Duplicates removed: 73</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Features Section -->
         <div id="features" class="bg-white py-24 sm:py-32">
@@ -127,8 +226,8 @@
                                 </div>
                                 Smart Filtering
                             </dt>
-                            <dd class="mt-2 text-base leading-7 text-gray-600">We automatically strip out health check
-                                noise and DEBUG logs during stable operation, saving you 30-50% on storage costs.</dd>
+                            <dd class="mt-2 text-base leading-7 text-gray-600">Automatically strip health check noise
+                                and duplicates so on-call focuses on real incidents.</dd>
                         </div>
                         <div class="relative pl-16">
                             <dt class="text-base font-semibold leading-7 text-gray-900">
@@ -158,12 +257,75 @@
                                 Secure by Default
                             </dt>
                             <dd class="mt-2 text-base leading-7 text-gray-600">Per-project API keys, role-based access
-                                control, and secure credential management out of the box.</dd>
+                                control, and secure credential handling out of the box.</dd>
                         </div>
                     </dl>
                 </div>
             </div>
         </div>
+
+        <!-- Integrations -->
+        <section class="bg-gray-50 py-20 sm:py-24">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <h2 class="text-base font-semibold leading-7 text-indigo-600">Integrations</h2>
+                    <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Fits your toolchain</p>
+                    <p class="mt-6 text-lg leading-8 text-gray-600">Forward high-signal events to your existing stack without re-wiring pipelines.</p>
+                </div>
+                <div class="mx-auto mt-12 grid max-w-4xl grid-cols-2 gap-4 text-center text-sm text-gray-600 sm:grid-cols-4">
+                    <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">Sentry</div>
+                    <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">Datadog</div>
+                    <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">S3</div>
+                    <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">HTTP Webhook</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="bg-white py-20 sm:py-24">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <h2 class="text-base font-semibold leading-7 text-indigo-600">Use cases</h2>
+                    <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Made for teams shipping fast</p>
+                </div>
+                <div class="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
+                    <div class="rounded-2xl border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900">Post-deploy regressions</h3>
+                        <p class="mt-2 text-sm text-gray-600">Pinpoint which release broke production in minutes.</p>
+                    </div>
+                    <div class="rounded-2xl border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900">On-call focus</h3>
+                        <p class="mt-2 text-sm text-gray-600">Reduce alert fatigue by dropping duplicates and noise.</p>
+                    </div>
+                    <div class="rounded-2xl border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900">Release accountability</h3>
+                        <p class="mt-2 text-sm text-gray-600">Maintain a clean timeline of deploys and incidents.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="bg-gray-900 py-20">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        See exactly which deployment caused the spike
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-300">Spin up a demo project and forward only the events that matter.</p>
+                    <div class="mt-8 flex items-center justify-center gap-x-6">
+                        @auth
+                            <a href="{{ url('/dashboard') }}"
+                                class="rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 transition">Open dashboard</a>
+                        @else
+                            <a href="{{ route('register') }}"
+                                class="rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 transition">Get started</a>
+                            <a href="#features" class="text-sm font-semibold text-white">See features <span aria-hidden="true">→</span></a>
+                        @endauth
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Footer -->
         <footer class="bg-gray-900 mx-auto mt-32 px-6 lg:px-8 py-12">
