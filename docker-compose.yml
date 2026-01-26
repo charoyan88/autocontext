@@ -94,17 +94,5 @@ services:
     container_name: autocontext-redis
     restart: unless-stopped
 
-  clickhouse:
-    # Disabled
-
-  zookeeper:
-    # Disabled
-
-  kafka:
-    # Disabled
-
-  kafka-connect:
-    # Disabled
-
 volumes:
   pgdata:
