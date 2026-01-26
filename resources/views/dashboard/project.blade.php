@@ -1,8 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-slate-800 dark:text-slate-100 leading-tight">
-            {{ $project->name }} - Dashboard
-        </h2>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="font-semibold text-xl text-slate-800 dark:text-slate-100 leading-tight">
+                {{ $project->name }} - Dashboard
+            </h2>
+            <form method="POST" action="{{ route('stats.flush') }}">
+                @csrf
+                <button type="submit"
+                    class="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 px-4 rounded-lg shadow-sm">
+                    Flush Stats
+                </button>
+            </form>
+        </div>
     </x-slot>
 
     <div class="py-12">

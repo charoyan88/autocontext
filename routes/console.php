@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 // Schedule hourly stats flush job
-Schedule::job(new HourlyStatsFlushJob())->hourly();
+Schedule::job(new HourlyStatsFlushJob())->everyMinute();

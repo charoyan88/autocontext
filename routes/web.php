@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\StatsController as AdminStatsController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Web\StatsController as WebStatsController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ProjectController;
 use Illuminate\Support\Facades\Route;
@@ -27,9 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/stats/flush', [WebStatsController::class, 'flush'])->name('stats.flush');
 
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::post('/stats/flush', [AdminStatsController::class, 'flush'])->name('stats.flush');
     });
 });
 
