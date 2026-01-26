@@ -80,6 +80,11 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2">
+                                    <button type="button"
+                                        class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 text-sm font-semibold"
+                                        data-copy="{{ $apiKey->key }}">
+                                        Copy
+                                    </button>
                                     <span
                                         class="px-2 py-1 rounded text-sm {{ $apiKey->is_active ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200' }}">
                                         {{ $apiKey->is_active ? 'Active' : 'Inactive' }}
@@ -190,4 +195,31 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.querySelectorAll('[data-copy]').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const value = button.getAttribute('data-copy');
+                    if (!value) {
+                        return;
+                    }
+                    try {
+                        await navigator.clipboard.writeText(value);
+                        const original = button.textContent;
+                        button.textContent = 'Copied';
+                        setTimeout(() => {
+                            button.textContent = original;
+                        }, 1200);
+                    } catch (error) {
+                        const original = button.textContent;
+                        button.textContent = 'Copy failed';
+                        setTimeout(() => {
+                            button.textContent = original;
+                        }, 1200);
+                    }
+                });
+            });
+        </script>
+    @endpush
 </x-app-layout>
