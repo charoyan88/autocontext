@@ -111,11 +111,9 @@ services:
       - ./docker/clickhouse/users.d:/etc/clickhouse-server/users.d:ro
 
   zookeeper:
-    image: bitnami/zookeeper:3.9
+    image: zookeeper:3.9
     container_name: autocontext-zookeeper
     restart: unless-stopped
-    environment:
-      ALLOW_ANONYMOUS_LOGIN: "yes"
 
   kafka:
     image: bitnami/kafka:3.7
