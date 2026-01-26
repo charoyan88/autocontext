@@ -33,7 +33,7 @@ class HourlyStatsFlushJob implements ShouldQueue
         // Group stats by project and hour
         $statsByProjectHour = [];
 
-        // Scan for all stats keys
+        // Scan for all stats keys (respect Redis key prefix)
         $pattern = 'stats:*';
         $cursor = 0;
 
@@ -51,8 +51,13 @@ class HourlyStatsFlushJob implements ShouldQueue
             }
 
             foreach ($keys as $key) {
+                $pos = strpos($key, 'stats:');
+                if ($pos === false) {
+                    continue;
+                }
+                $unprefixedKey = substr($key, $pos);
                 // Parse key: stats:1:2025121014:incoming
-                if (preg_match('/^stats:(\d+):(\d{10}):(\w+)$/', $key, $matches)) {
+                if (preg_match('/^stats:(\d+):(\d{10}):(\w+)$/', $unprefixedKey, $matches)) {
                     $projectId = (int) $matches[1];
                     $hour = $matches[2];
                     $type = $matches[3];
@@ -60,7 +65,7 @@ class HourlyStatsFlushJob implements ShouldQueue
                         continue;
                     }
 
-                    $value = (int) Redis::get($key);
+                    $value = (int) Redis::get($unprefixedKey);
 
                     if (!isset($statsByProjectHour[$projectId])) {
                         $statsByProjectHour[$projectId] = [];
@@ -105,8 +110,8 @@ class HourlyStatsFlushJob implements ShouldQueue
 
                     // Delete Redis keys after successful flush
                     foreach (['incoming', 'outgoing', 'filtered', 'deployment_errors', 'forward_failed'] as $type) {
-                        $key = "stats:{$projectId}:{$hour}:{$type}";
-                        Redis::del($key);
+                        $deleteKey = "stats:{$projectId}:{$hour}:{$type}";
+                        Redis::del($deleteKey);
                     }
                 } catch (\Exception $e) {
                     Log::error('Failed to flush stats', [
