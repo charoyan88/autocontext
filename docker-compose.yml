@@ -116,8 +116,6 @@ services:
     restart: unless-stopped
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
-    ports:
-      - "2181:2181"
 
   kafka:
     image: bitnami/kafka:3.7
