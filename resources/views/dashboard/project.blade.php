@@ -7,7 +7,7 @@
             <form method="POST" action="{{ route('stats.flush') }}">
                 @csrf
                 <button type="submit"
-                    class="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 px-4 rounded-lg shadow-sm">
+                    class="bg-sky-600 hover:bg-sky-500 text-white dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-slate-100 font-semibold py-2 px-4 rounded-lg shadow-sm">
                     Flush Stats
                 </button>
             </form>
