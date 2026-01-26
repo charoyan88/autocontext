@@ -54,4 +54,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Project::class);
     }
+
+    public function isAdmin(): bool
+    {
+        $emails = config('app.admin_emails', []);
+        $email = strtolower((string) $this->email);
+        $normalized = array_map('strtolower', $emails);
+
+        return $email !== '' && in_array($email, $normalized, true);
+    }
 }

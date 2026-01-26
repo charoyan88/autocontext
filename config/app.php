@@ -53,6 +53,9 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'admin_emails' => array_filter(
+        array_map('trim', explode(',', (string) env('ADMIN_EMAILS', 'admin@example.com')))
+    ),
 
     /*
     |--------------------------------------------------------------------------
