@@ -40,12 +40,15 @@ class HourlyStatsFlushJob implements ShouldQueue
         do {
             $result = Redis::scan($cursor, ['match' => $pattern, 'count' => 100]);
             if ($result === false) {
-                Log::warning('Redis scan failed during hourly stats flush', ['cursor' => $cursor]);
-                break;
+                Log::warning('Redis scan failed during hourly stats flush, falling back to KEYS', [
+                    'cursor' => $cursor,
+                ]);
+                $keys = Redis::keys($pattern);
+                $cursor = 0;
+            } else {
+                $cursor = $result[0] ?? 0;
+                $keys = $result[1] ?? [];
             }
-
-            $cursor = $result[0] ?? 0;
-            $keys = $result[1] ?? [];
 
             foreach ($keys as $key) {
                 // Parse key: stats:1:2025121014:incoming
