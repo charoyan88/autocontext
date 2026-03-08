@@ -1,8 +1,10 @@
 # Auto-Context
 
-Deployment-aware log filtering and context enrichment for Laravel-era MVP observability workflows.
+Deployment-aware log filtering and context enrichment for self-hosted observability.
 
-Auto-Context accepts application logs over HTTP, links them to deployments, filters noise, aggregates repeated errors, and forwards useful events to downstream destinations. The project currently targets local development and MVP evaluation, not production-hardened self-hosting.
+Auto-Context helps teams understand which deployment caused which errors by linking logs to deploys, filtering low-value noise, aggregating repeated failures, and forwarding high-signal events to downstream tools.
+
+Built for teams who want a lightweight, self-hosted observability layer between their apps and external logging systems.
 
 ## Status
 
