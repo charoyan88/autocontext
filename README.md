@@ -144,7 +144,7 @@ Optional integrations:
 - Kafka-related env vars and `docker/kafka-connect/` are experimental and not part of the default local startup path yet
 - Downstream HTTP, Sentry, and file targets should be treated as trusted-admin integrations
 
-Experimental Kafka Connect notes: see [docs/experimental_kafka_connect.md](/home/auto-context/docs/experimental_kafka_connect.md).
+Experimental Kafka Connect notes: see [docs/experimental_kafka_connect.md](docs/experimental_kafka_connect.md).
 
 ## Tests
 
@@ -169,12 +169,12 @@ docker compose exec app php artisan test tests/Feature/LogBatchProcessingTest.ph
 
 ## Contributing
 
-See [CONTRIBUTING.md](/home/auto-context/CONTRIBUTING.md) for the expected local workflow.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the expected local workflow.
 
 ## Security
 
-See [SECURITY.md](/home/auto-context/SECURITY.md) for the current trust model and disclosure guidance.
+See [SECURITY.md](SECURITY.md) for the current trust model and disclosure guidance.
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](/home/auto-context/LICENSE).
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
