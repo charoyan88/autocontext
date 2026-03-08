@@ -141,8 +141,10 @@ Optional integrations:
 
 - `CLICKHOUSE_ENABLED=false` by default
 - ClickHouse environment variables are included for experimentation but the default Compose flow does not require a ClickHouse container
-- Kafka-related env vars and `docker/kafka-connect/` are not part of the default local startup path yet
+- Kafka-related env vars and `docker/kafka-connect/` are experimental and not part of the default local startup path yet
 - Downstream HTTP, Sentry, and file targets should be treated as trusted-admin integrations
+
+Experimental Kafka Connect notes: see [docs/experimental_kafka_connect.md](/home/auto-context/docs/experimental_kafka_connect.md).
 
 ## Tests
 
