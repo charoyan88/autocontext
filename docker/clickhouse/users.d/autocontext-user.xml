@@ -1,0 +1,12 @@
+<clickhouse>
+  <users>
+    <autocontext>
+      <password>secret</password>
+      <networks>
+        <ip>::/0</ip>
+      </networks>
+      <profile>default</profile>
+      <quota>default</quota>
+    </autocontext>
+  </users>
+</clickhouse>

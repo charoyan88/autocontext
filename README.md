@@ -1,80 +1,88 @@
-# Auto-Context MVP
+# Auto-Context
 
-**Smart log filtering and context enrichment service for deployment-aware observability.**
+Deployment-aware log filtering and context enrichment for Laravel-era MVP observability workflows.
 
-Auto-Context automatically enriches your logs with deployment context, filters out noise, and aggregates errors—saving you money on log storage and processing costs.
+Auto-Context accepts application logs over HTTP, links them to deployments, filters noise, aggregates repeated errors, and forwards useful events to downstream destinations. The project currently targets local development and MVP evaluation, not production-hardened self-hosting.
 
-## 🎯 Features
+## Status
 
-- **🔑 API Key Authentication** - Secure multi-tenant access
-- **📊 Deployment Tracking** - Link logs to specific deployments
-- **🎨 Context Enrichment** - Auto-attach deployment metadata to logs
-- **🔇 Smart Filtering** - Remove DEBUG/TRACE logs and health-check noise
-- **📈 Statistics Tracking** - Real-time metrics with Redis + PostgreSQL
-- **🚨 Error Aggregation** - Deduplicate and track error patterns
-- **📤 Log Forwarding** - Send filtered logs to HTTP or file destinations
-- **📊 Dashboard** - Beautiful web UI with Chart.js visualizations
-- **💰 Cost Savings** - Track how much you're saving on log processing
+- MVP, actively evolving
+- Core local flow works with Docker Compose
+- ClickHouse and Kafka-related files are present, but they are optional and not part of the default quick start
 
-## 🏗️ Architecture
+## Features
 
-- **Backend**: Laravel 12 (PHP 8.3)
-- **Database**: PostgreSQL 16
-- **Cache/Queue**: Redis 7
-- **Web Server**: Nginx
-- **Frontend**: Blade + Tailwind CSS + Chart.js
-- **Deployment**: Docker Compose
+- API key authentication for project-scoped ingest
+- Deployment tracking via `POST /api/deployments`
+- Log ingestion via `POST /api/logs`
+- Deployment context enrichment during async processing
+- Noise filtering for low-value logs and health checks
+- Error aggregation for repeated failures
+- Downstream forwarding to file, HTTP, and Sentry-style endpoints
+- Dashboard for projects, deployments, API keys, and stats
 
-## 🚀 Quick Start
+## Stack
+
+- Laravel 12 / PHP 8.2+
+- PostgreSQL
+- Redis
+- Nginx
+- Blade + Tailwind + Vite
+- Docker Compose
+
+## Quick Start
 
 ### Prerequisites
 
-- Docker & Docker Compose
-- Git
+- Docker with Compose support
 
-### Installation
+### Start the project
 
-1. **Clone the repository**
 ```bash
 git clone https://github.com/charoyan88/autocontext.git
 cd autocontext
-```
-
-2. **One-command startup (recommended)**
-```bash
-chmod +x scripts/start_mvp.sh
 ./scripts/start_mvp.sh
 ```
 
-3. **Manual steps (alternative)**
+The app will be available at `http://localhost:8080`.
+
+### Alternative startup script
+
 ```bash
-docker compose up -d
-docker compose exec app composer install
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan demo:seed
+./start.sh
 ```
 
-6. **Access the application**
-- **Dashboard**: http://localhost:8080/login
-  - Email: `admin@auto-context.local`
-  - Password: `password`
-- **API**: http://localhost:8080/api
+### Demo access
 
-## 📡 API Usage
+- Dashboard: `http://localhost:8080/login`
+- Email: `admin@auto-context.local`
+- Password: `password`
+- API base URL: `http://localhost:8080/api`
 
-### Authentication
+## Local Services
 
-All API requests require an `X-Api-Key` header. Get your API key from the dashboard or use the demo key from seeder output.
+The default `docker-compose.yml` brings up:
 
-### Send Logs
+- `app`
+- `queue-worker`
+- `scheduler`
+- `nginx`
+- `vite`
+- `postgres`
+- `redis`
 
-**Single log:**
+Nginx is published on host port `8080`.
+
+## API Examples
+
+### Send a single log event
+
 ```bash
 curl -X POST http://localhost:8080/api/logs \
   -H "X-Api-Key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "timestamp": "2025-12-10T12:00:00+00:00",
+    "timestamp": "2026-01-17T12:00:00+00:00",
     "level": "ERROR",
     "message": "Database connection failed",
     "context": {
@@ -85,20 +93,21 @@ curl -X POST http://localhost:8080/api/logs \
   }'
 ```
 
-**Batch logs:**
+### Send a batch
+
 ```bash
 curl -X POST http://localhost:8080/api/logs \
   -H "X-Api-Key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "events": [
-      {"timestamp": "2025-12-10T12:00:00+00:00", "level": "INFO", "message": "Request started"},
-      {"timestamp": "2025-12-10T12:00:01+00:00", "level": "ERROR", "message": "Request failed"}
+      {"timestamp": "2026-01-17T12:00:00+00:00", "level": "INFO", "message": "Request started"},
+      {"timestamp": "2026-01-17T12:00:01+00:00", "level": "ERROR", "message": "Request failed"}
     ]
   }'
 ```
 
-### Track Deployments
+### Track a deployment
 
 ```bash
 curl -X POST http://localhost:8080/api/deployments \
@@ -108,132 +117,62 @@ curl -X POST http://localhost:8080/api/deployments \
     "version": "v1.2.0",
     "environment": "production",
     "region": "us-east-1",
-    "started_at": "2025-12-10T12:00:00+00:00"
+    "started_at": "2026-01-17T12:00:00+00:00"
   }'
 ```
 
-## 🔧 Configuration
+## Configuration Notes
 
-### Environment Variables
+Copy `.env.example` to `.env` if you are not using the startup scripts.
 
-Key variables in `.env`:
+Important defaults:
 
 ```env
-# Database
-DB_CONNECTION=pgsql
+APP_URL=http://localhost:8080
 DB_HOST=postgres
 DB_DATABASE=auto_context
 DB_USERNAME=auto
 DB_PASSWORD=secret
-
-# Redis
 REDIS_HOST=redis
-CACHE_STORE=redis
 QUEUE_CONNECTION=redis
-
-# Application
-APP_URL=http://localhost:8080
 ```
 
-### Log Filtering Rules
+Optional integrations:
 
-Edit `config/log_filter.php` to customize:
+- `CLICKHOUSE_ENABLED=false` by default
+- ClickHouse environment variables are included for experimentation but the default Compose flow does not require a ClickHouse container
+- Kafka-related env vars and `docker/kafka-connect/` are not part of the default local startup path yet
+- Downstream HTTP, Sentry, and file targets should be treated as trusted-admin integrations
 
-```php
-return [
-    'noise_levels' => ['DEBUG', 'TRACE'],
-    'health_check_paths' => ['/health', '/ping', '/metrics'],
-    'duplicate_error_threshold' => 10, // errors per minute
-];
-```
+## Tests
 
-## 📊 Dashboard Features
-
-- **Projects Overview** - All projects with stats
-- **Project Dashboard** - Real-time metrics with Chart.js
-- **API Keys Management** - Generate and manage keys
-- **Downstream Configuration** - UI for converting logs to File or HTTP destinations
-- **Downstream Configuration** - UI for converting logs to File or HTTP destinations
-- **Deployments Timeline** - Track deployment history
-- **Error Aggregation** - View top errors with counts
-- **Savings Calculator** - See cost reduction percentage
-
-## 🧪 Running Tests
+Run the test suite inside the app container:
 
 ```bash
-# Run all tests
 docker compose exec app php artisan test
-
-# Run specific test suite
-docker compose exec app php artisan test --testsuite=Feature
 ```
 
-## 📈 Scheduler
-
-The hourly stats flush job runs automatically via the `scheduler` container.
-
-## 🐛 Troubleshooting
-
-### Queue worker not processing jobs
+Run a specific test file:
 
 ```bash
-docker compose restart queue-worker
-docker compose logs queue-worker
+docker compose exec app php artisan test tests/Feature/LogBatchProcessingTest.php
 ```
 
-### Database connection issues
+## Development Notes
 
-```bash
-docker compose exec app php artisan config:clear
-docker compose exec app php artisan cache:clear
-```
+- Queue processing runs in the `queue-worker` container
+- Scheduled stat flushing runs in the `scheduler` container
+- Frontend assets are handled by the `vite` container
+- Nginx is configured generically for local use and does not require a specific domain name
 
-### View logs
+## Contributing
 
-```bash
-docker compose logs app
-docker compose logs queue-worker
-docker compose exec app tail -f storage/logs/laravel.log
-```
+See [CONTRIBUTING.md](/home/auto-context/CONTRIBUTING.md) for the expected local workflow.
 
-## 🏗️ Development
+## Security
 
-### Project Structure
+See [SECURITY.md](/home/auto-context/SECURITY.md) for the current trust model and disclosure guidance.
 
-```
-app/
-├── Http/Controllers/
-│   ├── Api/              # API endpoints
-│   └── Web/              # Dashboard controllers
-├── Jobs/                 # Queue jobs
-├── Models/               # Eloquent models
-└── Services/             # Business logic
-    ├── LogContextEnricher.php
-    ├── LogFilter.php
-    ├── LogForwarder.php
-    ├── StatsRecorder.php
-    └── ErrorAggregator.php
-```
+## License
 
-### Adding a New Downstream
-
-1. Add type to `downstream_endpoints` migration
-2. Implement forwarding logic in `LogForwarder::forward()`
-3. Update dashboard UI
-
-## 📝 License
-
-MIT License - see LICENSE file for details
-
-## 🤝 Contributing
-
-Contributions welcome! Please open an issue or PR.
-
-## 📧 Contact
-
-- GitHub: [@charoyan88](https://github.com/charoyan88)
-- Repository: [autocontext](https://github.com/charoyan88/autocontext)
-
----
-
-**Built with ❤️ using Laravel**
+This project is licensed under the MIT License. See [LICENSE](/home/auto-context/LICENSE).

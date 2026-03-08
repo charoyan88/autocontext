@@ -20,6 +20,7 @@ class ApiKeyManagementTest extends TestCase
             'slug' => 'test-project',
             'status' => 'active',
             'default_region' => 'us-east-1',
+            'user_id' => $user->id,
         ]);
 
         $response = $this->actingAs($user)
@@ -42,6 +43,7 @@ class ApiKeyManagementTest extends TestCase
             'slug' => 'test-project',
             'status' => 'active',
             'default_region' => 'us-east-1',
+            'user_id' => $user->id,
         ]);
 
         $apiKey = ApiKey::create([

@@ -21,7 +21,7 @@ class DemoSeeder extends Seeder
     {
         // 1. Create Admin User
         $user = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@auto-context.local'],
             [
                 'name' => 'Demo Admin',
                 'password' => Hash::make('password'),
@@ -138,7 +138,7 @@ class DemoSeeder extends Seeder
 
         if ($this->command) {
             $this->command->info('Demo data seeded successfully!');
-            $this->command->info('Login with: admin@example.com / password');
+            $this->command->info('Login with: admin@auto-context.local / password');
             $this->command->info('API Key: ' . $apiKey->key);
         }
     }

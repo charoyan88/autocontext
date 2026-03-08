@@ -34,7 +34,8 @@ class ProcessLogBatchJob implements ShouldQueue
         LogFilter $filter,
         \App\Services\LogForwarder $forwarder,
         \App\Services\StatsRecorder $statsRecorder,
-        \App\Services\ErrorAggregator $errorAggregator
+        \App\Services\ErrorAggregator $errorAggregator,
+        \App\Services\ClickhouseLogWriter $clickhouseWriter
     ): void {
         $project = Project::find($this->projectId);
 
@@ -51,6 +52,7 @@ class ProcessLogBatchJob implements ShouldQueue
 
 
         $enrichedEvents = [];
+        $clickhouseEvents = [];
 
         foreach ($this->events as $event) {
             if (is_array($event)) {
@@ -82,32 +84,41 @@ class ProcessLogBatchJob implements ShouldQueue
                     );
                 }
 
+                $isFiltered = false;
+
                 // Step 4: Check for duplicate errors
                 if ($filter->shouldDropDuplicate($project->id, $enrichedEvent, $errorAggregator)) {
                     $statsRecorder->recordFiltered($project->id);
-                    continue;
+                    $isFiltered = true;
                 }
 
                 // Step 5: Check if event should be filtered (noise)
-                if ($filter->shouldDrop($enrichedEvent)) {
+                if (!$isFiltered && $filter->shouldDrop($enrichedEvent)) {
                     $statsRecorder->recordFiltered($project->id);
-                    continue;
+                    $isFiltered = true;
                 }
 
-                // Collect for batch forwarding
-                $enrichedEvents[] = $enrichedEvent;
+                if (!$isFiltered) {
+                    // Collect for batch forwarding
+                    $enrichedEvents[] = $enrichedEvent;
 
-                // Record deployment errors for stats
-                if ($isError && $enrichedEvent->deploymentRelated) {
-                    $statsRecorder->recordDeploymentError($project->id);
+                    // Record deployment errors for stats
+                    if ($isError && $enrichedEvent->deploymentRelated) {
+                        $statsRecorder->recordDeploymentError($project->id);
+                    }
                 }
 
+                $clickhouseEvents[] = $this->toClickhouseRow($project->id, $enrichedEvent, $isFiltered, $isError);
             } catch (\Exception $e) {
                 Log::error("Failed to process event in batch", [
                     'project_id' => $this->projectId,
                     'error' => $e->getMessage()
                 ]);
             }
+        }
+
+        if (!empty($clickhouseEvents)) {
+            $clickhouseWriter->writeBatch($project, $clickhouseEvents);
         }
 
         // Step 6: Forward enriched events batch to downstream
@@ -129,5 +140,24 @@ class ProcessLogBatchJob implements ShouldQueue
                 ]);
             }
         }
+    }
+
+    private function toClickhouseRow(int $projectId, LogEventData $event, bool $isFiltered, bool $isError): array
+    {
+        return [
+            'project_id' => $projectId,
+            'ts' => $event->timestamp ?? now()->toIso8601String(),
+            'level' => strtoupper($event->level ?? 'INFO'),
+            'message' => (string) ($event->message ?? ''),
+            'service' => (string) ($event->service ?? ''),
+            'region' => (string) ($event->region ?? ''),
+            'path' => (string) ($event->path ?? ''),
+            'deployment_version' => (string) ($event->deploymentVersion ?? ''),
+            'deployment_environment' => (string) ($event->deploymentEnvironment ?? ''),
+            'deployment_related' => $event->deploymentRelated ? 1 : 0,
+            'is_filtered' => $isFiltered ? 1 : 0,
+            'is_error' => $isError ? 1 : 0,
+            'forward_failed' => 0,
+        ];
     }
 }

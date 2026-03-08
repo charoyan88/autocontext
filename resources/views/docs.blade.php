@@ -104,7 +104,7 @@
                             field is where you place your commit SHA, tag, or build number.
                         </p>
                         <div class="mt-4 rounded-xl bg-slate-950 p-4 text-sm text-slate-100 shadow-inner overflow-x-auto">
-                            <pre class="font-mono leading-6 text-slate-100"><code>curl -X POST http://auto-context.209.38.47.125.nip.io/api/deployments \
+                            <pre class="font-mono leading-6 text-slate-100"><code>curl -X POST http://localhost:8080/api/deployments \
   -H "Content-Type: application/json" \
   -H "X-Api-Key: YOUR_API_KEY" \
   -d '{
@@ -123,7 +123,7 @@
                             <code class="text-sm">timestamp</code>, <code class="text-sm">level</code>, <code class="text-sm">message</code>.
                         </p>
                         <div class="mt-4 rounded-xl bg-slate-950 p-4 text-sm text-slate-100 shadow-inner overflow-x-auto">
-                            <pre class="font-mono leading-6 text-slate-100"><code>curl -X POST http://auto-context.209.38.47.125.nip.io/api/logs \
+                            <pre class="font-mono leading-6 text-slate-100"><code>curl -X POST http://localhost:8080/api/logs \
   -H "Content-Type: application/json" \
   -H "X-Api-Key: YOUR_API_KEY" \
   -d '{
@@ -153,6 +153,10 @@
                         <p class="mt-3 text-slate-600">
                             Configure downstream endpoints per project in the dashboard. Auto-Context forwards only
                             enriched, high-signal events.
+                        </p>
+                        <p class="mt-3 text-slate-600">
+                            Downstream endpoints are a trusted-admin feature. HTTP, Sentry, and file targets should be
+                            configured only for destinations you control.
                         </p>
                     </section>
                 </div>

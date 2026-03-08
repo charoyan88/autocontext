@@ -19,6 +19,10 @@
                     <x-nav-link :href="route('docs')" :active="request()->routeIs('docs')">
                         {{ __('Docs') }}
                     </x-nav-link>
+                    <a href="{{ url('/#how') }}"
+                        class="text-sm font-semibold leading-6 text-slate-800 hover:text-sky-600 dark:text-slate-100 dark:hover:text-sky-300 transition">
+                        How it works
+                    </a>
                     @if (Auth::user()->isAdmin())
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
                             {{ __('Admin') }}
@@ -88,6 +92,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('docs')" :active="request()->routeIs('docs')">
                 {{ __('Docs') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="url('/#how')">
+                {{ __('How it works') }}
             </x-responsive-nav-link>
             @if (Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">

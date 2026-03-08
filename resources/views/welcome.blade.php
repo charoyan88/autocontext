@@ -20,10 +20,7 @@
                 <div class="flex lg:flex-1">
                     <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
                         <span class="sr-only">Auto-Context</span>
-                        <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
+                        <x-application-logo class="h-8 w-8" />
                         <span class="whitespace-nowrap font-bold text-xl tracking-tight text-gray-900">Auto-Context</span>
                     </a>
                 </div>
@@ -31,12 +28,16 @@
                     @auth
                         <a href="{{ route('docs') }}"
                             class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">Docs</a>
+                        <a href="#how"
+                            class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">How it works</a>
                         <a href="{{ url('/dashboard') }}"
                             class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">Go to
                             Dashboard <span aria-hidden="true">&rarr;</span></a>
                     @else
                         <a href="{{ route('docs') }}"
                             class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">Docs</a>
+                        <a href="#how"
+                            class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">How it works</a>
                         <a href="{{ route('login') }}"
                             class="text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600 transition">Log
                             in</a>
@@ -61,12 +62,16 @@
                 <div class="mx-auto max-w-7xl px-6 lg:px-8">
                     <div class="mx-auto max-w-2xl text-center">
                         <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                            Context-Aware Observability for Modern Deployments
+                            Context-Aware Observability Between Deployments and Incidents
                         </h1>
                         <p class="mt-6 text-lg leading-8 text-gray-600">
-                            Stop guessing which deployment caused that error. Auto-Context enriches logs with deploy
-                            metadata, filters noise, and aggregates errors so SREs, DevOps, and backend teams can ship
-                            faster with confidence.
+                            Stop guessing which deployment caused that error.
+                            Auto-Context sits between your app and observability tools,
+                            enriching logs with deploy metadata, filtering noise,
+                            and aggregating errors so teams can ship faster with confidence.
+                        </p>
+                        <p class="mt-4 text-sm text-gray-500">
+                            Forward curated events to file, Sentry-style, or generic HTTP downstreams.
                         </p>
                         <div class="mt-10 flex items-center justify-center gap-x-6">
                             @auth
@@ -81,15 +86,11 @@
                                         aria-hidden="true">→</span></a>
                             @endauth
                         </div>
+                        <p class="mt-4 text-xs text-gray-500">Local-first MVP for evaluation and self-hosted experimentation.</p>
                         <div class="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-gray-600">
-                            <span class="rounded-full bg-gray-100 px-3 py-1">SRE</span>
                             <span class="rounded-full bg-gray-100 px-3 py-1">DevOps</span>
-                            <span class="rounded-full bg-gray-100 px-3 py-1">Backend</span>
-                            <span class="rounded-full bg-gray-100 px-3 py-1">Eng Managers</span>
-                            <span class="rounded-full bg-gray-100 px-3 py-1">Enrich</span>
-                            <span class="rounded-full bg-gray-100 px-3 py-1">Filter</span>
-                            <span class="rounded-full bg-gray-100 px-3 py-1">Aggregate</span>
-                            <span class="rounded-full bg-gray-100 px-3 py-1">Forward</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">SRE</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1">Backend Leads</span>
                         </div>
                     </div>
                 </div>
@@ -104,7 +105,7 @@
         </div>
 
         <!-- How It Works -->
-        <section class="bg-gray-50 py-20 sm:py-24">
+        <section id="how" class="bg-gray-50 py-20 sm:py-24">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="mx-auto max-w-2xl text-center">
                     <h2 class="text-base font-semibold leading-7 text-indigo-600">How it works</h2>
@@ -116,7 +117,9 @@
                     <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                         <p class="text-sm font-semibold text-indigo-600">01</p>
                         <h3 class="mt-2 text-lg font-semibold text-gray-900">Ingest + enrich</h3>
-                        <p class="mt-2 text-sm text-gray-600">Attach commit SHA, deployment ID, region, and service metadata automatically.</p>
+                        <p class="mt-2 text-sm text-gray-600">
+                            Attach commit SHA, deployment ID, region, and service metadata automatically.
+                        </p>
                     </div>
                     <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                         <p class="text-sm font-semibold text-indigo-600">02</p>
@@ -126,7 +129,7 @@
                     <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                         <p class="text-sm font-semibold text-indigo-600">03</p>
                         <h3 class="mt-2 text-lg font-semibold text-gray-900">Forward downstream</h3>
-                        <p class="mt-2 text-sm text-gray-600">Send only high-signal events to Sentry, Datadog, S3, or your HTTP endpoint.</p>
+                        <p class="mt-2 text-sm text-gray-600">Send only high-signal events to file, Sentry-style, or your HTTP endpoint.</p>
                     </div>
                 </div>
             </div>
@@ -145,10 +148,11 @@
                         <p class="mt-2 text-sm text-gray-600">faster incident triage with deploy context</p>
                     </div>
                     <div class="rounded-2xl border border-gray-200 p-6">
-                        <p class="text-3xl font-bold text-gray-900">&lt;1 min</p>
-                        <p class="mt-2 text-sm text-gray-600">to spot regressions after deploys</p>
+                        <p class="text-3xl font-bold text-gray-900">Lower noise</p>
+                        <p class="mt-2 text-sm text-gray-600">by forwarding fewer high-signal events downstream</p>
                     </div>
                 </div>
+                <p class="mt-6 text-xs text-gray-500 text-center">Illustrative flow for the current MVP feature set.</p>
             </div>
         </section>
 
@@ -162,7 +166,7 @@
                 <div class="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2">
                     <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Before</h3>
-                        <p class="mt-2 text-sm text-gray-600">Noisy logs and alerts with no deploy context.</p>
+                        <p class="mt-2 text-sm text-gray-600">Noisy logs with no deploy context or ownership.</p>
                         <div class="mt-4 space-y-2 text-sm">
                             <div class="rounded-lg bg-gray-100 px-3 py-2">ERROR: timeout in /api/orders</div>
                             <div class="rounded-lg bg-gray-100 px-3 py-2">ERROR: timeout in /api/orders</div>
@@ -172,7 +176,7 @@
                     </div>
                     <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">After</h3>
-                        <p class="mt-2 text-sm text-gray-600">Grouped errors tied to a specific deployment.</p>
+                        <p class="mt-2 text-sm text-gray-600">Grouped errors clearly tied to a single deployment.</p>
                         <div class="mt-4 space-y-2 text-sm">
                             <div class="rounded-lg bg-indigo-50 px-3 py-2 text-indigo-900">
                                 ERROR: timeout in /api/orders
@@ -242,7 +246,21 @@
                                 Downstream Forwarding
                             </dt>
                             <dd class="mt-2 text-base leading-7 text-gray-600">Process logs here, then forward the
-                                important ones to S3, Datadog, or your custom HTTP endpoints.</dd>
+                                important ones to file, Sentry-style, or your custom HTTP endpoints.</dd>
+                        </div>
+                        <div class="relative pl-16">
+                            <dt class="text-base font-semibold leading-7 text-gray-900">
+                                <div
+                                    class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                                    </svg>
+                                </div>
+                                Fast Integration
+                            </dt>
+                            <dd class="mt-2 text-base leading-7 text-gray-600">One HTTP endpoint for all services. Start forwarding in minutes.</dd>
                         </div>
                         <div class="relative pl-16">
                             <dt class="text-base font-semibold leading-7 text-gray-900">
@@ -254,10 +272,10 @@
                                             d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                                     </svg>
                                 </div>
-                                Secure by Default
+                                Project Access Controls
                             </dt>
-                            <dd class="mt-2 text-base leading-7 text-gray-600">Per-project API keys, role-based access
-                                control, and secure credential handling out of the box.</dd>
+                            <dd class="mt-2 text-base leading-7 text-gray-600">Per-project API keys and admin-only
+                                management routes for the current MVP workflow.</dd>
                         </div>
                     </dl>
                 </div>
@@ -271,12 +289,13 @@
                     <h2 class="text-base font-semibold leading-7 text-indigo-600">Integrations</h2>
                     <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Fits your toolchain</p>
                     <p class="mt-6 text-lg leading-8 text-gray-600">Forward high-signal events to your existing stack without re-wiring pipelines.</p>
+                    <p class="mt-2 text-sm text-gray-500">Auto-Context forwards events after enrichment and filtering — your tools stay unchanged.</p>
                 </div>
                 <div class="mx-auto mt-12 grid max-w-4xl grid-cols-2 gap-4 text-center text-sm text-gray-600 sm:grid-cols-4">
                     <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">Sentry</div>
-                    <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">Datadog</div>
-                    <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">S3</div>
                     <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">HTTP Webhook</div>
+                    <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">File</div>
+                    <div class="rounded-xl bg-white py-4 ring-1 ring-gray-200">Dashboard</div>
                 </div>
             </div>
         </section>
@@ -312,7 +331,9 @@
                     <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                         See exactly which deployment caused the spike
                     </h2>
-                    <p class="mt-4 text-lg text-gray-300">Spin up a demo project and forward only the events that matter.</p>
+                    <p class="mt-4 text-lg text-gray-300">
+                        Create a project, send a few events, and get deploy-level grouping in minutes.
+                    </p>
                     <div class="mt-8 flex items-center justify-center gap-x-6">
                         @auth
                             <a href="{{ url('/dashboard') }}"
@@ -331,14 +352,8 @@
         <footer class="bg-gray-900 mx-auto mt-32 px-6 lg:px-8 py-12">
             <div class="mx-auto max-w-7xl md:flex md:items-center md:justify-between">
                 <div class="flex justify-center space-x-6 md:order-2">
-                    <!-- Social links placeholders -->
-                    <a href="#" class="text-gray-400 hover:text-gray-300">
-                        <span class="sr-only">GitHub</span>
-                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path fill-rule="evenodd"
-                                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.943 0-1.091.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.597 1.028 2.688 0 3.848-2.339 4.685-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                                clip-rule="evenodd" />
-                        </svg>
+                    <a href="https://github.com/charoyan88/autocontext" class="text-gray-400 hover:text-gray-300 text-xs">
+                        GitHub repository
                     </a>
                 </div>
                 <div class="mt-8 md:order-1 md:mt-0">
